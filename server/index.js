@@ -3,7 +3,8 @@ const app = express();
 const cors = require("cors");
 require("dotenv").config();
 
-const {client} = require("./db.js");
+const db = require("./db/db.js");
+const { createTables } = require("./db/schema.js");
 
 const PORT = process.env.PORT || 3000;
 
@@ -14,14 +15,16 @@ app.get("/", (req,res,next)=>{
 })
 
 const init = async ()=>{
-    try{
-    await client.connect();
-    app.listen(PORT, ()=>{
-        console.log(`server alive on port ${PORT}`)
-    });
-    }catch(err){
-            console.log(err)
-        }
-    };
+    try {
+        await createTables();
+        console.log("Database tables initialized");
+
+        app.listen(PORT, () => {
+            console.log(`server alive on port ${PORT}`);
+        });
+    } catch(err) {
+        console.log("Error during initialization:", err);
+    }
+};
 
     init();
