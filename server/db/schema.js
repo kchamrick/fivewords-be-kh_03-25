@@ -39,13 +39,27 @@ const createTables = async () => {
     await db.query(`
         CREATE TABLE IF NOT EXISTS game_participants (
         id SERIAL PRIMARY KEY,
-        game_id INTEGER NOT NULL REFERENCES game(id),
+        game_id INTEGER NOT NULL REFERENCES games(id),
         user_id INTEGER NOT NULL REFERENCES users(id),
         score INTEGER DEFAULT 0,
         turn_order INTEGER NOT NULL,
         status VARCHAR(20) NOT NULL DEFAULT 'invited',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         CONSTRAINT unique_participant UNIQUE(game_id, user_id)
+        )
+        `);
+    //Rounds table
+    await db.query(`
+        CREATE TABLE IF NOT EXISTS rounds (
+        id SERIAL PRIMARY KEY,
+        game_id INTEGER NOT NULL REFERENCES games(id),
+        leader_id INTEGER NOT NULL REFERENCES users(id),
+        round_number INTEGER NOT NULL,
+        status VARCHAR(20) NOT NULL DEFAULT 'waiting',
+        time_limit INTEGER,
+        start_time TIMESTAMP,
+        end_time TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
         `);
     //Required words table
